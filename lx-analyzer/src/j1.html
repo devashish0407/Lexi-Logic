@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>jQuery Mouse Events</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      $("p").hover(
+        function(){  // mouseenter
+          $(this).css("opacity", "0.1"); // or fade out slightly
+        },
+        function(){  // mouseleave
+          $(this).css("opacity", "1");
+        }
+      );
+    });
+  </script>
+</head>
+<body>
+
+<p>Hover over this paragraph. It will disappear when the mouse enters and reappear when the mouse leaves.</p>
+
+</body>
+</html>
