@@ -64,18 +64,23 @@ export function analyzeCode(code) {
         type = 'symbol'
       } else if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(value)) {
         // Identifier — check for near-miss keywords
-        const closeKeyword = cKeywords.find(
+      let closeKeyword = null
+
+      if (value.length > 2) {
+        closeKeyword = cKeywords.find(
           kw => levenshtein(value.toLowerCase(), kw) === 1
         )
+      }
 
-        if (closeKeyword) {
-          type = 'invalid'
-          errors.push(
-            `Possible misspelled keyword "${value}" on line ${lineNum + 1} — did you mean "${closeKeyword}"?`
-          )
-        } else {
-          type = 'identifier'
-        }
+      if (closeKeyword) {
+        type = 'invalid'
+        errors.push(
+          `Possible misspelled keyword "${value}" on line ${lineNum + 1} — did you mean "${closeKeyword}"?`
+        )
+      } else {
+        type = 'identifier'
+      }
+
       } else {
         type = 'invalid'
         errors.push(`Unrecognized token "${value}" on line ${lineNum + 1}`)
