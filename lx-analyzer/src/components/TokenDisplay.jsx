@@ -7,7 +7,7 @@ const TOKEN_STYLES = {
   number: "text-red-900 bg-red-200",
   string_literal: "text-blue-900 bg-blue-200",
   symbol: "text-gray-900 bg-gray-200",
-  invalid: "text-black bg-red-200", // changed from unknown
+  invalid: "text-black bg-red-200",
 };
 
 const TOKEN_TOOLTIPS = {
@@ -17,7 +17,7 @@ const TOKEN_TOOLTIPS = {
   number: "Numeric literal (e.g., 42)",
   string_literal: "String literal (e.g., \"Hello\")",
   symbol: "Syntax symbol (e.g., ;, {, })",
-  invalid: "Unrecognized or invalid token", // changed
+  invalid: "Unrecognized or invalid token",
 };
 
 export default function TokenDisplay({ tokens }) {
@@ -40,6 +40,10 @@ export default function TokenDisplay({ tokens }) {
     ])
   );
 
+  const noFilteredTokens =
+    Object.keys(filteredTokensByLine).length === 0 ||
+    Object.values(filteredTokensByLine).every((lineTokens) => lineTokens.length === 0);
+
   return (
     <div className="h-full bg-blue-200 flex flex-col">
       <div className="top-0 px-4 py-3 bg-white dark:bg-gray-800 z-10 flex justify-between items-center">
@@ -59,9 +63,9 @@ export default function TokenDisplay({ tokens }) {
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        {tokens.length === 0 ? (
+        {tokens.length === 0 || noFilteredTokens ? (
           <div className="h-full flex justify-center items-center text-black dark:text-black">
-            No tokens to display
+            {filter === "all" ? "No tokens to display" : `No ${filter}s to display`}
           </div>
         ) : (
           <div className="space-y-4">
@@ -72,22 +76,23 @@ export default function TokenDisplay({ tokens }) {
               return (
                 <div key={line} className="token-line relative animate-fadeIn">
                   <div className="pl-12 flex flex-wrap gap-2">
-                    {filter !== "all"
-                      ? lineTokens.map((token, index) =>
+                    {filter !== "all" ? (
+                      lineTokens.map((token, index) =>
+                        renderToken(token, index)
+                      )
+                    ) : (
+                      <>
+                        {normalTokens.map((token, index) =>
                           renderToken(token, index)
-                        )
-                      : <>
-                          {normalTokens.map((token, index) =>
-                            renderToken(token, index)
-                          )}
-                          {invalidTokens.length > 0 && normalTokens.length > 0 && (
-                            <div className="w-full h-2" />
-                          )}
-                          {invalidTokens.map((token, index) =>
-                            renderToken(token, index)
-                          )}
-                        </>
-                    }
+                        )}
+                        {invalidTokens.length > 0 && normalTokens.length > 0 && (
+                          <div className="w-full h-2" />
+                        )}
+                        {invalidTokens.map((token, index) =>
+                          renderToken(token, index)
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               );
