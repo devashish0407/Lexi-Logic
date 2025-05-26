@@ -21,10 +21,10 @@ Make sure you have the following installed on your system:
 2. Install dependencies
 Using npm:
 
-    npm install
-
+       npm install
+   
 Or using yarn:
-
+    
     yarn install
 
 Running the Project Locally
