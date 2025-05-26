@@ -28,7 +28,7 @@ export default function CodeEditor({ code, setCode, setTokens, setErrors }) {
   }
 
   return (
-    <div className="w-full h-full p-1  bg-gray-500">
+    <div data-testid="code-editor" className="w-full h-full p-1  bg-gray-500">
       <Editor
         // height="100%"
         language="c"

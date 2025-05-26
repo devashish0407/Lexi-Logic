@@ -2,9 +2,8 @@ import { render } from '@testing-library/react';
 import CodeEditor from '../components/Editor';
 import { describe, it, vi } from 'vitest';
 
-
-describe('CodeEditor', () => {
-  it('renders without crashing', () => {
+describe('CodeEditor Component', () => {
+  it('renders editor without crashing', () => {
     render(
       <CodeEditor
         code="int main() {}"
@@ -14,4 +13,6 @@ describe('CodeEditor', () => {
       />
     );
   });
+
+  // You can optionally simulate editor change if needed using Monaco mock (advanced)
 });

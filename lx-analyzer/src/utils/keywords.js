@@ -8,16 +8,20 @@ export const cKeywords = [
     "unsigned", "void", "volatile", "while"
   ]
   
-  // export const dataTypes = [
-  //   "int", "char", "float", "double", "void", "short", "long"
-  // ]
-  
-  export const operators = [
-    "+", "-", "*", "/", "%", "++", "--", "==", "!=", ">", "<",
-    ">=", "<=", "&&", "||", "!", "&", "|", "^", "~", "<<", ">>", "="
-  ]
-  
-  export const symbols = [
-    ";", ",", "(", ")", "{", "}", "[", "]"
-  ]
+
+export const operators = [
+  // existing operators,
+  '++', '--', 
+  '==', '!=', '>=', '<=', '>>', '<<',
+  '+', '-', '*', '/', '%', '=', '&', '|', '^', '~', '<', '>', '!',
+  // ...others as needed
+]
+
+export const symbols = [
+  // existing symbols,
+  '.', 
+  ';', ',', '(', ')', '{', '}', '[', ']',
+  // ...others as needed
+]
+
   

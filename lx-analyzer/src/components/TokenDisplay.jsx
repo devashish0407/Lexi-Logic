@@ -1,6 +1,4 @@
-import React from 'react';
-
-import { useState } from "react";
+import React, { useState } from "react";
 
 const TOKEN_STYLES = {
   keyword: "text-purple-900 bg-purple-200",
@@ -9,7 +7,7 @@ const TOKEN_STYLES = {
   number: "text-red-900 bg-red-200",
   string_literal: "text-blue-900 bg-blue-200",
   symbol: "text-gray-900 bg-gray-200",
-  unknown: "text-black bg-yellow-100",
+  invalid: "text-black bg-red-200", // changed from unknown
 };
 
 const TOKEN_TOOLTIPS = {
@@ -19,7 +17,7 @@ const TOKEN_TOOLTIPS = {
   number: "Numeric literal (e.g., 42)",
   string_literal: "String literal (e.g., \"Hello\")",
   symbol: "Syntax symbol (e.g., ;, {, })",
-  unknown: "Unrecognized or invalid token",
+  invalid: "Unrecognized or invalid token", // changed
 };
 
 export default function TokenDisplay({ tokens }) {
@@ -31,7 +29,8 @@ export default function TokenDisplay({ tokens }) {
     return acc;
   }, {});
 
-  // Filter handler
+  const tokenTypes = Object.keys(TOKEN_STYLES);
+
   const filteredTokensByLine = Object.fromEntries(
     Object.entries(tokensByLine).map(([line, lineTokens]) => [
       line,
@@ -41,10 +40,8 @@ export default function TokenDisplay({ tokens }) {
     ])
   );
 
-  const tokenTypes = Object.keys(TOKEN_STYLES);
-
   return (
-    <div className="h-full bg-blue-200 flex flex-col ">
+    <div className="h-full bg-blue-200 flex flex-col">
       <div className="top-0 px-4 py-3 bg-white dark:bg-gray-800 z-10 flex justify-between items-center">
         <h2 className="text-lg font-semibold">Tokens</h2>
         <select
@@ -60,6 +57,7 @@ export default function TokenDisplay({ tokens }) {
           ))}
         </select>
       </div>
+
       <div className="flex-1 overflow-auto p-4">
         {tokens.length === 0 ? (
           <div className="h-full flex justify-center items-center text-black dark:text-black">
@@ -67,59 +65,64 @@ export default function TokenDisplay({ tokens }) {
           </div>
         ) : (
           <div className="space-y-4">
-            {Object.entries(filteredTokensByLine).map(([line, lineTokens]) => (
-              <div key={line} className="token-line relative animate-fadeIn">
-                <div className="pl-12 flex flex-wrap gap-2">
-                  {lineTokens.length === 0 ? (
-                    <span className="text-black">
-                      {/* No tokens of selected type */}
-                    </span>
-                  ) : (
-                    lineTokens.map((token, index) => {
-                      const colorClass =
-                        TOKEN_STYLES[token.type] || "text-black";
-                      const tooltip =
-                        TOKEN_TOOLTIPS[token.type] || "Token";
+            {Object.entries(filteredTokensByLine).map(([line, lineTokens]) => {
+              const normalTokens = lineTokens.filter((t) => t.type !== "invalid");
+              const invalidTokens = lineTokens.filter((t) => t.type === "invalid");
 
-                      return (
-                        <span
-                          key={`${token.line}-${token.column}-${index}`}
-                          className={`inline-flex items-center px-2 py-1 rounded text-sm font-mono transition-all hover:shadow-md hover:scale-105 cursor-pointer ${colorClass}`}
-                          title={tooltip}
-                        >
-                          <span
-                            className={`text-xs mr-1.5 ${
-                            token.type === "keyword"
-                            ? "font-bold"
-                            : token.type === "identifier"
-                            ? "font-semibold"
-                            : token.type === "operator"
-                            ? "font-medium"
-                            : token.type === "number"
-                            ? "font-normal"
-                            : token.type === "string_literal"
-                            ? "font-semibold italic"
-                            : token.type === "symbol"
-                            ? "font-light"
-                            : "font-bold italic"
-  }`}
->
-  {token.type}
-</span>
-
-                          {token.value.length > 30
-                            ? `${token.value.substring(0, 30)}...`
-                            : token.value}
-                        </span>
-                      );
-                    })
-                  )}
+              return (
+                <div key={line} className="token-line relative animate-fadeIn">
+                  <div className="pl-12 flex flex-wrap gap-2">
+                    {filter !== "all"
+                      ? lineTokens.map((token, index) =>
+                          renderToken(token, index)
+                        )
+                      : <>
+                          {normalTokens.map((token, index) =>
+                            renderToken(token, index)
+                          )}
+                          {invalidTokens.length > 0 && normalTokens.length > 0 && (
+                            <div className="w-full h-2" />
+                          )}
+                          {invalidTokens.map((token, index) =>
+                            renderToken(token, index)
+                          )}
+                        </>
+                    }
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function renderToken(token, index) {
+  const colorClass = TOKEN_STYLES[token.type] || "text-black";
+  const tooltip = TOKEN_TOOLTIPS[token.type] || "Token";
+
+  return (
+    <span
+      key={`${token.line}-${token.column || index}-${index}`}
+      className={`inline-flex items-center px-2 py-1 rounded text-sm font-mono transition-all hover:shadow-md hover:scale-105 cursor-pointer ${colorClass}`}
+      title={tooltip}
+    >
+      <span className={`text-xs mr-1.5 ${
+        token.type === "keyword" ? "font-bold" :
+        token.type === "identifier" ? "font-semibold" :
+        token.type === "operator" ? "font-medium" :
+        token.type === "number" ? "font-normal" :
+        token.type === "string_literal" ? "font-semibold italic" :
+        token.type === "symbol" ? "font-light" :
+        "font-bold italic"
+      }`}>
+        {token.type}
+      </span>
+      {token.value.length > 30
+        ? `${token.value.substring(0, 30)}...`
+        : token.value}
+    </span>
   );
 }
